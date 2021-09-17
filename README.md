@@ -1,6 +1,8 @@
 OpenWRT Config Wireless
 =========
 
+[![Role](https://img.shields.io/ansible/role/56268.svg)](https://galaxy.ansible.com/pe_pe/openwrt_config_wireless/)
+[![Quality](https://img.shields.io/ansible/quality/56268.svg)](https://galaxy.ansible.com/pe_pe/openwrt_config_wireless/)
 [![CI](https://github.com/pe-pe/ansible_role_openwrt_config_wireless/workflows/CI/badge.svg)](https://github.com/pe-pe/ansible_role_openwrt_config_wireless/actions)
 
 Ansible role that configures wireless settings of OpenWRT device (mainly those which are usually defined in `/etc/config/wireless`).
