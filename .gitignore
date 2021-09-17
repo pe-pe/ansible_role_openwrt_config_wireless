@@ -1,0 +1,5 @@
+# .retry files (after failed playbook runs)
+*.retry
+
+# .pyc files (python compiled code)
+*.pyc

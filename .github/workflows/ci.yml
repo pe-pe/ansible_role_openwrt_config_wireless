@@ -1,0 +1,50 @@
+---
+name: CI
+'on':
+  pull_request:
+  push:
+    branches:
+      - main
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    # Every Sunday 2 a.m.
+    - cron:  '0 2 * * 0'
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Molecule
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        distribution:
+          - openwrtorg/rootfs:x86-64-openwrt-21.02  # linux/amd64
+          - openwrtorg/rootfs:x86-64-openwrt-19.07  # linux/amd64
+
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install Molecule and test tools
+        run: pip3 install ansible molecule molecule-docker docker yamllint ansible-lint
+
+      - name: Run Molecule tests
+        run: molecule test
+        env:
+          # Include colors in molecule and ansible output
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          DISTRIBUTION_TO_TEST: ${{ matrix.distribution }}
+
+      - name: Run Molecule tests with --check Ansible mode
+        run: molecule check
+        env:
+          # Include colors in molecule and ansible output
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          DISTRIBUTION_TO_TEST: ${{ matrix.distribution }}

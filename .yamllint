@@ -1,0 +1,13 @@
+---
+
+extends: default
+
+rules:
+  braces:
+    max-spaces-inside: 1
+  colons:
+    max-spaces-after: 10
+  line-length:
+    max: 160
+  truthy:
+    allowed-values: ["true", "false", "yes", "no"]

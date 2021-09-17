@@ -1,0 +1,21 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint: |
+  set -e
+  yamllint .
+platforms:
+  - name: instance
+    image: ${DISTRIBUTION_TO_TEST:-openwrtorg/rootfs:latest}
+    command: "/sbin/init"
+    pre_build_image: true
+    groups:
+      - openwrt
+provisioner:
+  name: ansible
+  options:
+    diff: true
+verifier:
+  name: ansible

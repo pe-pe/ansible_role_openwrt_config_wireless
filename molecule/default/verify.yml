@@ -1,0 +1,56 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - vars.yml
+
+  roles:
+    - role: ansible_role_openwrt
+
+  tasks:
+    # wireless config test
+    - name: Check whether wireless configuration was set
+      command: "uci show wireless"
+      register: uci_show_wireless_result
+      failed_when:
+        - not "radio0=wifi-device" in uci_show_wireless_result.stdout or
+          not "radio0.channel='" ~ openwrt_config_wireless.devices.radio0.channel ~ "'" in uci_show_wireless_result.stdout or
+          not "radio0.htmode='" ~ openwrt_config_wireless.devices.radio0.htmode ~ "'" in uci_show_wireless_result.stdout or
+          not "radio0.country='" ~ openwrt_config_wireless.devices.radio0.country ~ "'" in uci_show_wireless_result.stdout or
+          not "radio0.legacy_rates='" ~ openwrt_config_wireless.devices.radio0.legacy_rates ~ "'" in uci_show_wireless_result.stdout or
+          not "radio0.disabled='" ~ openwrt_config_wireless.devices.radio0.disabled ~ "'" in uci_show_wireless_result.stdout or
+          not "radio1=wifi-device" in uci_show_wireless_result.stdout or
+          not "radio1.channel='" ~ openwrt_config_wireless.devices.radio1.channel ~ "'" in uci_show_wireless_result.stdout or
+          not "radio1.htmode='HT20'" in uci_show_wireless_result.stdout or
+          "radio1.country=" in uci_show_wireless_result.stdout or
+          not "radio1.legacy_rates='0'" in uci_show_wireless_result.stdout or
+          "radio1.disabled=" in uci_show_wireless_result.stdout or
+          not "default_radio0=wifi-iface" in uci_show_wireless_result.stdout or
+          not "default_radio0.device='" ~ openwrt_config_wireless.interfaces.default_radio0.device ~ "'" in uci_show_wireless_result.stdout or
+          not "default_radio0.mode='" ~ openwrt_config_wireless.interfaces.default_radio0.mode ~ "'" in uci_show_wireless_result.stdout or
+          not "default_radio0.ssid='" ~ openwrt_config_wireless.interfaces.default_radio0.ssid ~ "'" in uci_show_wireless_result.stdout or
+          not "default_radio0.encryption='" ~ openwrt_config_wireless.interfaces.default_radio0.encryption ~ "'" in uci_show_wireless_result.stdout or
+          not "default_radio0.key='" ~ openwrt_config_wireless.interfaces.default_radio0.key ~ "'" in uci_show_wireless_result.stdout or
+          not "default_radio0.network='" ~ openwrt_config_wireless.interfaces.default_radio0.network ~ "'" in uci_show_wireless_result.stdout or
+          not "default_radio0.isolate='" ~ openwrt_config_wireless.interfaces.default_radio0.isolate ~ "'" in uci_show_wireless_result.stdout or
+          not "default_radio0.wps_pushbutton='" ~ openwrt_config_wireless.interfaces.default_radio0.wps_pushbutton ~ "'" in uci_show_wireless_result.stdout or
+          not "mesh=wifi-iface" in uci_show_wireless_result.stdout or
+          not "mesh.device='" ~ openwrt_config_wireless.interfaces.mesh.device ~ "'" in uci_show_wireless_result.stdout or
+          not "mesh.mode='" ~ openwrt_config_wireless.interfaces.mesh.mode ~ "'" in uci_show_wireless_result.stdout or
+          not "mesh.encryption='" ~ openwrt_config_wireless.interfaces.mesh.encryption ~ "'" in uci_show_wireless_result.stdout or
+          not "mesh.key='" ~ openwrt_config_wireless.interfaces.mesh.key ~ "'" in uci_show_wireless_result.stdout or
+          not "mesh.network='" ~ openwrt_config_wireless.interfaces.mesh.network ~ "'" in uci_show_wireless_result.stdout or
+          not "mesh.mesh_id='" ~ openwrt_config_wireless.interfaces.mesh.mesh_id ~ "'" in uci_show_wireless_result.stdout or
+          not "mesh.mesh_fwding='" ~ openwrt_config_wireless.interfaces.mesh.mesh_fwding ~ "'" in uci_show_wireless_result.stdout or
+          not "mesh.mesh_rssi_threshold='" ~ openwrt_config_wireless.interfaces.mesh.mesh_rssi_threshold ~ "'" in uci_show_wireless_result.stdout or
+          not "default_empty=wifi-iface" in uci_show_wireless_result.stdout or
+          "default_empty.device=" in uci_show_wireless_result.stdout or
+          not "default_empty.mode='ap'" in uci_show_wireless_result.stdout or
+          not "default_empty.ssid='OpenWrt'" in uci_show_wireless_result.stdout or
+          "default_empty.encryption=" in uci_show_wireless_result.stdout or
+          "default_empty.key=" in uci_show_wireless_result.stdout or
+          "default_empty.network=" in uci_show_wireless_result.stdout or
+          "default_empty.isolate=" in uci_show_wireless_result.stdout or
+          "default_empty.wps_pushbutton=" in uci_show_wireless_result.stdout
+      changed_when: false

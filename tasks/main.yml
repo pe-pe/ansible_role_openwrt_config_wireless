@@ -1,0 +1,97 @@
+---
+# Variables used in tasks:
+# - openwrt_config_wireless (dict)
+
+# In case WPS (Wi-Fi Protected Setup) is requested or MESH, some packages require different full versions
+- name: Remove WPS superseded packages
+  opkg:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - wpad-mini   # replaced by wpad
+    - wpad-basic  # replaced by wpad
+  when:
+    - openwrt_config_wireless.interfaces is defined
+    - (openwrt_config_wireless.interfaces.values() | selectattr('wps_pushbutton', 'defined') | length > 0) or
+      (openwrt_config_wireless.interfaces.values() | selectattr('mode', 'defined') | selectattr('mode', 'equalto', 'mesh') | length > 0)
+
+- name: Set wpad package to wpad-mesh-openssl in case mesh is requred
+  set_fact:
+    openwrt_config_wireless_wpad_pkg: wpad-mesh-openssl
+  when:
+    - openwrt_config_wireless.interfaces is defined
+    - openwrt_config_wireless.interfaces.values() | selectattr('mode', 'defined') | selectattr('mode', 'equalto', 'mesh') | length > 0
+
+- name: Install WPS required packages
+  opkg:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - "{{ openwrt_config_wireless_wpad_pkg | default('wpad') }}"  # (replaces wpad-basic/wpad-mini)
+    - hostapd-utils                                               # WPS (required for WPS to work)
+  when:
+    - openwrt_config_wireless.interfaces is defined
+    - openwrt_config_wireless.interfaces.values() | selectattr('wps_pushbutton', 'defined') | length > 0
+  notify: Reload wifi
+
+# Create wireless section/file if not exists
+- name: Create section if not exists
+  copy:
+    content: ""
+    dest: /etc/config/wireless
+    force: false
+    group: root
+    owner: root
+    mode: 0600
+  when:
+    - openwrt_config_wireless is defined
+
+- name: Revert pending UCI changes
+  uci:
+    command: revert
+    key: wireless
+  when:
+    - openwrt_config_wireless is defined
+
+- name: Configure devices
+  uci:
+    command: section
+    key: "wireless.{{ item.key }}"
+    type: wifi-device
+    value:
+      channel: "{{ item.value.channel }}"
+      htmode: "{{ item.value.htmode | default('HT20') }}"
+      country: "{{ item.value.country | default()}}"
+      legacy_rates: "{{ item.value.legacy_rates | default(0) }}"
+      disabled: "{{ item.value.disabled | default() }}"
+  with_dict: "{{ openwrt_config_wireless.devices}}"
+  when:
+    - openwrt_config_wireless.devices is defined
+
+- name: Configure interfaces
+  uci:
+    command: section
+    key: "wireless.{{ item.key }}"
+    type: wifi-iface
+    value:
+      device: "{{ item.value.device | default() }}"
+      mode: "{{ item.value.mode | default('ap')}}"
+      ssid: "{{ item.value.ssid | default('OpenWrt') }}"
+      encryption: "{{ item.value.encryption | default() }}"
+      key: "{{ item.value.key | default() }}"
+      mesh_id: "{{ item.value.mesh_id | default() }}"
+      mesh_fwding: "{{ item.value.mesh_fwding | default() }}"
+      mesh_rssi_threshold: "{{ item.value.mesh_rssi_threshold | default() }}"
+      network: "{{ item.value.network | default() }}"
+      isolate: "{{ item.value.isolate | default() }}"
+      wps_pushbutton: "{{ item.value.wps_pushbutton | default() }}"
+  with_dict: "{{ openwrt_config_wireless.interfaces}}"
+  when:
+    - openwrt_config_wireless.interfaces is defined
+
+- name: Commit UCI changes done
+  uci:
+    command: commit
+  when:
+    - openwrt_config_wireless is defined
+  notify: Reload wifi

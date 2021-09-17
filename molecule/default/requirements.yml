@@ -1,0 +1,4 @@
+---
+roles:
+  - name: ansible_role_openwrt
+    src: gekmihesg.openwrt

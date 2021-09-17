@@ -1,0 +1,12 @@
+---
+- name: Reload wifi
+  nohup:
+    command: /sbin/wifi reload
+    delay: 1
+
+- name: Wait for connection
+  wait_for_connection:
+    timeout: 600
+    delay: 5
+  listen:
+    - Reload wifi

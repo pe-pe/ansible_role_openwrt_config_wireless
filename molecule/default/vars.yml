@@ -1,0 +1,11 @@
+---
+openwrt_install_recommended_packages: false
+
+openwrt_config_wireless:
+  devices:
+    radio0: { channel:  1, htmode: HT40, country: PL, legacy_rates: 1, disabled: 1 }
+    radio1: { channel: 36 }
+  interfaces:
+    default_radio0: { device: radio0, mode: sta, ssid: Test, encryption: psk2+ccmp, key: Password, network: lan, isolate: 1, wps_pushbutton: 1 }
+    mesh: { device: radio1, mode: mesh, encryption: sae, key: MeshPassword, network: lan, mesh_id: mymesh, mesh_fwding: 1, mesh_rssi_threshold: 0 }
+    default_empty: {}

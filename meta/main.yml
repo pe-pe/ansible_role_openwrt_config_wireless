@@ -1,0 +1,25 @@
+---
+galaxy_info:
+  role_name: openwrt_config_wireless
+  namespace: pe_pe
+  author: PePe
+  description: |
+    OpenWrt configuration via Ansible. This roles configures wireless settings.
+  company: none
+  license: MIT
+
+  min_ansible_version: 2.8
+
+  platforms:
+    - name: OpenWrt
+      versions:
+        - 19.07
+        - 21.02
+
+  galaxy_tags:
+    - openwrt
+    - config
+    - router
+    - wireless
+
+dependencies: []
