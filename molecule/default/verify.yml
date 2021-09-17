@@ -47,7 +47,7 @@
           not "default_empty=wifi-iface" in uci_show_wireless_result.stdout or
           "default_empty.device=" in uci_show_wireless_result.stdout or
           not "default_empty.mode='ap'" in uci_show_wireless_result.stdout or
-          not "default_empty.ssid='OpenWrt'" in uci_show_wireless_result.stdout or
+          "default_empty.ssid=" in uci_show_wireless_result.stdout or
           "default_empty.encryption=" in uci_show_wireless_result.stdout or
           "default_empty.key=" in uci_show_wireless_result.stdout or
           "default_empty.network=" in uci_show_wireless_result.stdout or

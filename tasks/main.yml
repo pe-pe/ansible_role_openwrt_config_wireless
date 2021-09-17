@@ -76,7 +76,7 @@
     value:
       device: "{{ item.value.device | default() }}"
       mode: "{{ item.value.mode | default('ap')}}"
-      ssid: "{{ item.value.ssid | default('OpenWrt') }}"
+      ssid: "{{ item.value.ssid | default() }}"
       encryption: "{{ item.value.encryption | default() }}"
       key: "{{ item.value.key | default() }}"
       mesh_id: "{{ item.value.mesh_id | default() }}"
