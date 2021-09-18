@@ -3,7 +3,22 @@
 # - openwrt_config_wireless (dict)
 
 # In case WPS (Wi-Fi Protected Setup) is requested or MESH, some packages require different full versions
-- name: Remove WPS superseded packages
+- name: Set wpad package in case WPS is required
+  set_fact:
+    openwrt_config_wireless_wpad_pkg: wpad
+    openwrt_config_wireless_wps: true
+  when:
+    - openwrt_config_wireless.interfaces is defined
+    - openwrt_config_wireless.interfaces.values() | selectattr('wps_pushbutton', 'defined') | length > 0
+
+- name: Set/overwrite wpad package in case MESH is required
+  set_fact:
+    openwrt_config_wireless_wpad_pkg: wpad-mesh-openssl
+  when:
+    - openwrt_config_wireless.interfaces is defined
+    - openwrt_config_wireless.interfaces.values() | selectattr('mode', 'defined') | selectattr('mode', 'equalto', 'mesh') | length > 0
+
+- name: Remove WPS/MESH superseded packages
   opkg:
     name: "{{ item }}"
     state: absent
@@ -12,26 +27,24 @@
     - wpad-basic  # replaced by wpad
   when:
     - openwrt_config_wireless.interfaces is defined
-    - (openwrt_config_wireless.interfaces.values() | selectattr('wps_pushbutton', 'defined') | length > 0) or
-      (openwrt_config_wireless.interfaces.values() | selectattr('mode', 'defined') | selectattr('mode', 'equalto', 'mesh') | length > 0)
+    - openwrt_config_wireless_wpad_pkg is defined
 
-- name: Set wpad package to wpad-mesh-openssl in case mesh is requred
-  set_fact:
-    openwrt_config_wireless_wpad_pkg: wpad-mesh-openssl
-  when:
-    - openwrt_config_wireless.interfaces is defined
-    - openwrt_config_wireless.interfaces.values() | selectattr('mode', 'defined') | selectattr('mode', 'equalto', 'mesh') | length > 0
-
-- name: Install WPS required packages
+- name: Install WPS/MESH required packages
   opkg:
-    name: "{{ item }}"
+    name: "{{ openwrt_config_wireless_wpad_pkg }}"  # (replaces wpad-basic/wpad-mini)
     state: present
-  loop:
-    - "{{ openwrt_config_wireless_wpad_pkg | default('wpad') }}"  # (replaces wpad-basic/wpad-mini)
-    - hostapd-utils                                               # WPS (required for WPS to work)
   when:
     - openwrt_config_wireless.interfaces is defined
-    - openwrt_config_wireless.interfaces.values() | selectattr('wps_pushbutton', 'defined') | length > 0
+    - openwrt_config_wireless_wpad_pkg is defined
+  notify: Reload wifi
+
+- name: Install hostapd-utils required for WPS to work
+  opkg:
+    name: hostapd-utils
+    state: present
+  when:
+    - openwrt_config_wireless.interfaces is defined
+    - openwrt_config_wireless_wps is defined
   notify: Reload wifi
 
 # Create wireless section/file if not exists
