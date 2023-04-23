@@ -4,7 +4,7 @@
     command: /sbin/wifi reload
     delay: 1
 
-- name: Wait for connection
+- name: Wait for connection (wifi)
   wait_for_connection:
     timeout: 600
     delay: 5
