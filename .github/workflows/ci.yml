@@ -1,6 +1,6 @@
 ---
 name: CI
-'on':
+on:
   pull_request:
   push:
     branches:
@@ -23,15 +23,15 @@ jobs:
 
     steps:
       - name: Check-out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set up Python 3.x
-        uses: actions/setup-python@v2
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: 3.x
 
       - name: Install Molecule and test tools
-        run: pip3 install ansible molecule molecule-docker docker yamllint ansible-lint
+        run: pip3 install ansible molecule 'molecule-plugins[docker]' docker yamllint ansible-lint
 
       - name: Run Molecule tests
         run: molecule test
