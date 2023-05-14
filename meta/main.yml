@@ -13,8 +13,8 @@ galaxy_info:
   platforms:
     - name: OpenWrt
       versions:
-        - 19.07
         - 21.02
+        - 22.03
 
   galaxy_tags:
     - openwrt
