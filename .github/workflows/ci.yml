@@ -18,8 +18,8 @@ jobs:
     strategy:
       matrix:
         distribution:
-          - openwrt/rootfs:x86-64-openwrt-21.02  # linux/amd64
-          - openwrt/rootfs:x86-64-openwrt-22.03  # linux/amd64
+          - openwrt/rootfs:x86-64-v21.02.7  # linux/amd64
+          - openwrt/rootfs:x86-64-v22.03.5  # linux/amd64
 
     steps:
       - name: Check-out repository
