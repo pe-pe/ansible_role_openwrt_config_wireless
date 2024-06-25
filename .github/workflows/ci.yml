@@ -19,7 +19,7 @@ jobs:
       matrix:
         distribution:
           - openwrt/rootfs:x86-64-v22.03.6  # linux/amd64
-          - openwrt/rootfs:x86-64-v23.05.2  # linux/amd64
+          - openwrt/rootfs:x86-64-v23.05.3  # linux/amd64
 
     steps:
       - name: Check-out repository
@@ -31,7 +31,7 @@ jobs:
           python-version: 3.x
 
       - name: Install Molecule and test tools
-        run: pip3 install 'ansible-core<2.16' ansible molecule 'molecule-plugins[docker]' docker yamllint ansible-lint
+        run: pip3 install ansible-core ansible molecule 'molecule-plugins[docker]' docker yamllint ansible-lint
 
       - name: Run Molecule tests
         run: molecule test
